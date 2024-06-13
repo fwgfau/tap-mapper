@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+ 
+[project]
+name = "tap-mapper"
+version = "0.0.1"
+authors = [
+  { name="Friedrich Wagner", email="friedrich.wagner@fau.de" },
+]
+description = "Qiskit transpiler pass for TAP routing"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+	"qiskit>=1.0",
+	"networkx>=3.3",
+	"gurobipy"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: Apache-2",
+    "Operating System :: OS Independent",
+]
+[project.entry-points."qiskit.transpiler.routing"] 
+tap = "tap_mapper.plugin:TAPMappingPlugin"
+
+[project.optional-dependencies]
+test = ["qiskit-aer","html-testrunner"]
