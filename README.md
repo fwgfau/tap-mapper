@@ -2,7 +2,7 @@
 An algorithm for qubit routing by swap insertion, implemented as a Qiskit transpiler stage.
 ## Description
 The allgorithm decomposes the routing problem into two sub-problems, of which the first one is solved by integer programming.
-The second subproblem is solved by an efficient approximation algorithm.
+The second subproblem is solved by an efficient approximation algorithm, see https://arxiv.org/abs/1602.05150.
 For a detailed description of the decomposition algorithm, see https://arxiv.org/abs/2206.01294.
 The algorithm can consider single qubit errors, two-qubit errors as well as crosstalk errors.
 For a detailed description of the error incorporation, see https://arxiv.org/abs/2401.06423.
