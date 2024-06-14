@@ -43,7 +43,7 @@ class TestTAPMapping(unittest.TestCase):
 
             dag = circuit_to_dag(qc)
 
-            dagctap = tap_pass.run(dag, time_limit=5)
+            dagctap = tap_pass.run(dag, time_limit=5, log_level=1)
             dagctaps.append(dagctap)
             qct = dag_to_circuit(dagctap)
             qcts.append(qct)

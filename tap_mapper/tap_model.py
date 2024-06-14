@@ -36,7 +36,7 @@ def get_tap_model(
     else:
         logical_qubits = hardware_graph.nodes
     physical_qubits = hardware_graph.nodes()
-    pair_distances = [d for d in all_pairs_dijkstra_path_length(hardware_graph)]
+    pair_distances = dict([d for d in all_pairs_dijkstra_path_length(hardware_graph)])
 
     mdl = gp.Model()
     mdl.params.OutPutFlag = log_level
@@ -66,7 +66,7 @@ def get_tap_model(
         for q in logical_qubits:
             for i in physical_qubits:
                 for j in physical_qubits:
-                    if pair_distances[i][1][j] <= max_dist:
+                    if pair_distances[i][j] <= max_dist:
                         x[t, q, i, j] = mdl.addVar(vtype="B", name=f"x_{t}_{q}_{i}_{j}")
 
     mdl.update()
@@ -136,7 +136,7 @@ def get_tap_model(
         for q in logical_qubits:
             for i in physical_qubits:
                 mdl.addConstr(
-                    w[t, q, i] == sum(x[t, q, i, j] for j in hardware_graph.nodes() if pair_distances[i][1][j] <= max_dist),
+                    w[t, q, i] == sum(x[t, q, i, j] for j in hardware_graph.nodes() if pair_distances[i][j] <= max_dist),
                     name=f"flow_out_{q}_{i}_at_{t}",
                 )
 
@@ -144,18 +144,18 @@ def get_tap_model(
         for q in logical_qubits:
             for i in physical_qubits:
                 mdl.addConstr(
-                    w[t, q, i] == sum(x[t - 1, q, j, i] for j in hardware_graph.nodes if pair_distances[i][1][j] <= max_dist),
+                    w[t, q, i] == sum(x[t - 1, q, j, i] for j in hardware_graph.nodes if pair_distances[i][j] <= max_dist),
                     name=f"flow_in_{q}_{i}_at_{t}",
                 )
 
     c_swap = sum(
         [
-            int(pair_distances[i][1][j]) * x[t, q, i, j]
+            int(pair_distances[i][j]) * x[t, q, i, j]
             for i in physical_qubits
             for j in physical_qubits
             for t in range(num_layers - 1)
             for q in logical_qubits
-            if pair_distances[i][1][j] <= max_dist
+            if pair_distances[i][j] <= max_dist
         ]
     )
     c_noise = (
